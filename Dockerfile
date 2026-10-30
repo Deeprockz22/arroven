@@ -12,6 +12,6 @@ WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 STORAGE_DIR=/data/storage PORT=3000
 COPY --from=build /app ./
 RUN mkdir -p /data/storage && chown -R node:node /data
-USER node
 EXPOSE 3000
-CMD ["sh", "-c", "npx tsx scripts/migrate.ts && npx next start -p ${PORT}"]
+# Starts as root only to take ownership of the mounted disk, then drops to the node user (see scripts/start.sh).
+CMD ["sh", "scripts/start.sh"]

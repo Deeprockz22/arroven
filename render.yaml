@@ -1,0 +1,30 @@
+# Render Blueprint: one private web service with a persistent disk, plus a managed Postgres database.
+# In Render: New → Blueprint → pick this repository. Render asks for ALLOWED_EMAILS before the first deploy.
+services:
+  - type: web
+    name: arroven
+    runtime: docker
+    plan: starter
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /login
+    autoDeploy: true
+    disk:
+      name: arroven-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: arroven-db
+          property: connectionString
+      - key: ALLOWED_EMAILS
+        sync: false
+
+databases:
+  - name: arroven-db
+    plan: free
+    region: singapore
+    databaseName: arroven
+    user: arroven
+    postgresMajorVersion: "17"
