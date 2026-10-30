@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Wordmark } from "@/components/brand";
+import { currentUser } from "@/server/session";
 import { PLANS } from "@/server/plans";
 
 const STEPS = [
@@ -23,16 +25,15 @@ const TRUST = [
   ["Your data stays with us", "ARROVEN's own models only. No third-party AI service ever sees your records."],
 ];
 
-export default function Landing() {
+/** The product overview. Private like the rest of the workspace: signed-out visitors only see the sign-in page. */
+export default async function Landing() {
+  if (!(await currentUser())) redirect("/login");
   return (
     <div className="min-h-screen bg-surface">
       <header className="bg-bar">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4">
           <Wordmark light />
-          <nav className="flex items-center gap-2">
-            <Link href="/login" className="rounded-lg px-3 py-1.5 text-[14px] font-medium text-white/90 hover:text-white">Sign in</Link>
-            <Link href="/signup" className="rounded-lg bg-white px-3.5 py-1.5 text-[14px] font-semibold text-accent hover:bg-accent-soft">Start a pilot</Link>
-          </nav>
+          <Link href="/app" className="rounded-lg bg-white px-3.5 py-1.5 text-[14px] font-semibold text-accent hover:bg-accent-soft">Open your cases</Link>
         </div>
       </header>
 
@@ -46,9 +47,8 @@ export default function Landing() {
                 ARROVEN reads the records behind an unresolved defect, drafts a timeline in which every line cites its source, and lets your
                 engineers test each explanation against the evidence.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <Link href="/signup" className="btn btn-primary px-5 py-2.5 text-[15px]">Start a 60-day pilot</Link>
-                <Link href="/signup" className="btn px-5 py-2.5 text-[15px]">Try the demo case</Link>
+              <div>
+                <Link href="/app" className="btn btn-primary px-5 py-2.5 text-[15px]">Open your cases</Link>
               </div>
             </div>
 
@@ -133,7 +133,6 @@ export default function Landing() {
                     <li>{p.seats === null ? "Unlimited members" : `Up to ${p.seats} members`}</li>
                     {key === "enterprise" && <li>Runs inside your own environment</li>}
                   </ul>
-                  {key === "trial" && <Link href="/signup" className="btn btn-primary w-fit">Start a pilot</Link>}
                 </div>
               ))}
             </div>

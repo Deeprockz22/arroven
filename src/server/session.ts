@@ -3,6 +3,7 @@ import { cache } from "react";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { getDb } from "./db";
+import { isEmailAllowed } from "./access";
 import { createSession, deleteSession, membershipBySlug, userForSession } from "./services/accounts";
 import type { Ctx } from "./context";
 
@@ -11,7 +12,9 @@ const COOKIE = "arroven_session";
 export const currentUser = cache(async () => {
   const token = (await cookies()).get(COOKIE)?.value;
   if (!token) return null;
-  return userForSession(await getDb(), token);
+  const user = await userForSession(await getDb(), token);
+  // Removing someone from the access list ends their access on their next request.
+  return user && isEmailAllowed(user.email) ? user : null;
 });
 
 export async function requireUser() {

@@ -9,6 +9,8 @@ const jet = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variabl
 export const metadata: Metadata = {
   title: { default: "ARROVEN", template: "%s · ARROVEN" },
   description: "Engineer-controlled investigation workspace for recurring and unresolved aircraft technical faults.",
+  // A private workspace: keep every page out of search engines.
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

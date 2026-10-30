@@ -7,6 +7,7 @@ import { dummyHash, hashPassword, newToken, sha256, verifyPassword } from "../au
 import { assertCan } from "../permissions";
 import { PLANS, withinLimit } from "../plans";
 import { audit } from "../audit";
+import { NOT_ON_LIST, isEmailAllowed } from "../access";
 import type { Ctx } from "../context";
 
 export const SESSION_DAYS = 14;
@@ -52,6 +53,7 @@ export async function signUp(db: Db, input: { name: string; email: string; passw
   if (!input.inviteToken && !(await openSignupAllowed(db, opts.mode)))
     throw new AppError("forbidden", "Sign-up is by invitation only. Ask an administrator of your organization for an invite link.");
   const { name: n, email: e, password: p, orgName } = parsed.data;
+  if (!isEmailAllowed(e)) throw new AppError("forbidden", NOT_ON_LIST);
   const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.email, e));
   if (existing) throw new AppError("conflict", "An account with this email already exists. Sign in instead.");
 
@@ -76,6 +78,7 @@ export async function authenticate(db: Db, emailInput: string, pw: string) {
   // Compare against a dummy hash when the user is unknown so response time does not reveal accounts.
   const ok = await verifyPassword(pw, user?.passwordHash ?? (await dummyHash()));
   if (!user || !ok) throw new AppError("unauthenticated", "That email and password do not match an account.");
+  if (!isEmailAllowed(user.email)) throw new AppError("forbidden", NOT_ON_LIST);
   return user;
 }
 
@@ -139,6 +142,7 @@ export async function createInvite(ctx: Ctx, input: { email: string; role: strin
   assertCan(ctx.role, "members.manage");
   const e = email.safeParse(input.email);
   if (!e.success) throw new AppError("invalid", e.error.issues[0].message);
+  if (!isEmailAllowed(e.data)) throw new AppError("invalid", "Only addresses on this workspace's access list can be invited. Add it to ALLOWED_EMAILS first.");
   const role = ROLES.includes(input.role as Role) ? (input.role as Role) : null;
   if (!role) throw new AppError("invalid", "Choose a role for the invite.");
   if (role === "owner" && ctx.role !== "owner") throw new AppError("forbidden", "Only an owner can invite another owner.");
@@ -165,6 +169,7 @@ export async function inviteDetails(db: Db, token: string) {
 }
 
 export async function acceptInvite(db: Db, userId: string, userEmail: string, token: string) {
+  if (!isEmailAllowed(userEmail)) throw new AppError("forbidden", NOT_ON_LIST);
   const row = await inviteDetails(db, token);
   if (!row) throw new AppError("not_found", "This invite link has expired or was already used.");
   if (row.invite.email !== userEmail.toLowerCase()) throw new AppError("forbidden", `This invite was sent to ${row.invite.email}. Sign in with that address to accept it.`);
