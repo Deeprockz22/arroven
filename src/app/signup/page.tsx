@@ -4,13 +4,22 @@ import { AuthShell } from "@/components/auth-shell";
 import { ActionForm, Submit } from "@/components/forms";
 import { signUpAction } from "@/app/actions";
 import { getDb } from "@/server/db";
-import { inviteDetails } from "@/server/services/accounts";
+import { inviteDetails, openSignupAllowed } from "@/server/services/accounts";
 
 export const metadata: Metadata = { title: "Start a pilot" };
 
 export default async function SignUp({ searchParams }: { searchParams: Promise<{ invite?: string }> }) {
   const { invite } = await searchParams;
-  const inv = invite ? await inviteDetails(await getDb(), invite) : null;
+  const db = await getDb();
+  const inv = invite ? await inviteDetails(db, invite) : null;
+  if (!inv && !(await openSignupAllowed(db))) {
+    return (
+      <AuthShell title="Sign-up is by invitation" subtitle="This ARROVEN workspace is private. Ask its administrator for an invite link.">
+        {invite && <p className="msg-error">This invite link has expired or was already used. Ask for a new one.</p>}
+        <p className="border-t border-line pt-5 text-[14px] text-muted">Already have an account? <Link href="/login" className="font-medium text-accent hover:underline">Sign in</Link></p>
+      </AuthShell>
+    );
+  }
   return (
     <AuthShell
       title={inv ? `Join ${inv.orgName}` : "Start a pilot"}

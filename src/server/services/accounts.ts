@@ -28,9 +28,29 @@ async function uniqueSlug(db: Db, base: string) {
   }
 }
 
-export async function signUp(db: Db, input: { name: string; email: string; password: string; orgName?: string; inviteToken?: string }) {
+/**
+ * Who may create a new organization without an invite. `invite` closes self-service sign-up once the first
+ * account exists, so a shared deployment link can't be used by strangers. Default: open in development,
+ * invite-only in production; override with SIGNUP_MODE=open|invite.
+ */
+export function signupMode(): "open" | "invite" {
+  const m = process.env.SIGNUP_MODE;
+  if (m === "open" || m === "invite") return m;
+  return process.env.NODE_ENV === "production" ? "invite" : "open";
+}
+
+/** Whether the sign-up form may create a new organization right now (the very first account always may). */
+export async function openSignupAllowed(db: Db, mode = signupMode()) {
+  if (mode === "open") return true;
+  const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(users);
+  return n === 0;
+}
+
+export async function signUp(db: Db, input: { name: string; email: string; password: string; orgName?: string; inviteToken?: string }, opts: { mode?: "open" | "invite" } = {}) {
   const parsed = z.object({ name, email, password, orgName: z.string().trim().max(120).optional() }).safeParse(input);
   if (!parsed.success) throw new AppError("invalid", parsed.error.issues[0].message);
+  if (!input.inviteToken && !(await openSignupAllowed(db, opts.mode)))
+    throw new AppError("forbidden", "Sign-up is by invitation only. Ask an administrator of your organization for an invite link.");
   const { name: n, email: e, password: p, orgName } = parsed.data;
   const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.email, e));
   if (existing) throw new AppError("conflict", "An account with this email already exists. Sign in instead.");

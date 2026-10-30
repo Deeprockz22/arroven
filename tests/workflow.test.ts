@@ -173,3 +173,17 @@ describe("imports", () => {
     void statements;
   });
 });
+
+describe("invite-only sign-up", () => {
+  it("lets the first account in, then requires an invite", async () => {
+    const fresh = await openPgliteDb();
+    const first = await signUp(fresh, { name: "First", email: "first@example.test", password: "correct horse battery", orgName: "First Org" }, { mode: "invite" });
+    expect(first.orgSlug).toBe("first-org");
+    await expect(signUp(fresh, { name: "Stranger", email: "stranger@example.test", password: "correct horse battery", orgName: "Stranger Org" }, { mode: "invite" }))
+      .rejects.toThrow(/by invitation only/);
+    const m = (await membershipBySlug(fresh, first.user.id, first.orgSlug))!;
+    const token = await createInvite({ db: fresh, userId: first.user.id, orgId: m.org.id, role: m.role }, { email: "friend@example.test", role: "reviewer" });
+    const friend = await signUp(fresh, { name: "Friend", email: "friend@example.test", password: "correct horse battery", inviteToken: token }, { mode: "invite" });
+    expect(friend.orgSlug).toBe("first-org");
+  });
+});

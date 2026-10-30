@@ -1,6 +1,7 @@
 "use server";
 
 import { after } from "next/server";
+import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
@@ -27,6 +28,15 @@ import { createTrainingExport, deleteTrainingExport, setCaseTrainingPermission }
 export type ActionState = { error?: string; ok?: string; data?: Record<string, string> } | undefined;
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "");
+
+/** The address people use to reach this deployment: APP_URL if set, otherwise the request's own host. */
+async function publicBaseUrl() {
+  if (process.env.APP_URL) return process.env.APP_URL.replace(/\/$/, "");
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
+  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
+  return `${proto}://${host}`;
+}
 
 function fail(e: unknown): ActionState {
   if (isAppError(e)) return { error: e.message };
@@ -108,7 +118,7 @@ export async function acceptInviteAction(_: ActionState, fd: FormData): Promise<
 export async function inviteAction(_: ActionState, fd: FormData) {
   return orgAction(fd, async (ctx) => {
     const token = await createInvite(ctx, { email: str(fd, "email"), role: str(fd, "role") });
-    const link = `${process.env.APP_URL ?? "http://localhost:3000"}/invite/${token}`;
+    const link = `${await publicBaseUrl()}/invite/${token}`;
     return { ok: "Invite created. Send this link to them; it works once and expires in 7 days.", data: { link } };
   });
 }
