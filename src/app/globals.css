@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+/* ARROVEN: white and blue. One light theme on purpose: calm white surfaces, a single blue for actions and
+   focus, status colours (amber, green, red) only where something needs attention. */
+:root {
+  --bg: #f6f8fc; --surface: #ffffff; --sunk: #f1f5fb; --ink: #11203a; --muted: #5d6b82; --line: #dfe6f0;
+  --accent: #1a5fd8; --accent-ink: #ffffff; --accent-soft: #eaf1fe;
+  --amber: #9a5b00; --amber-soft: #fff4e0;
+  --good: #1b7a46; --good-soft: #e6f5ec;
+  --bad: #b42318; --bad-soft: #fdecea;
+  --inc: #5d6b82; --inc-soft: #eef2f7;
+  --hl: #fff3b0;
+  --bar: #1550c0;
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-sunk: var(--sunk);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-amber: var(--amber);
+  --color-amber-soft: var(--amber-soft);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --color-inc: var(--inc);
+  --color-inc-soft: var(--inc-soft);
+  --color-bar: var(--bar);
+  --font-display: var(--font-barlow), "Arial Narrow", sans-serif;
+  --font-sans: var(--font-public), system-ui, sans-serif;
+  --font-mono: var(--font-jet), ui-monospace, Menlo, monospace;
+}
+
+body { background: var(--bg); color: var(--ink); font-family: var(--font-sans); font-size: 14px; line-height: 1.5; }
+h1, h2, h3 { text-wrap: balance; }
+summary { list-style: none; }
+summary::-webkit-details-marker { display: none; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@layer components {
+  .eyebrow { font: 500 12.5px/1.3 var(--font-sans); color: var(--muted); }
+  .h-display { font-family: var(--font-display); font-weight: 600; letter-spacing: .01em; line-height: 1.05; }
+  .h-section { font: 600 16px/1.3 var(--font-sans); color: var(--ink); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+  .mono { font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .caption { font-size: 12.5px; color: var(--muted); }
+
+  .btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 500; line-height: 1.3; cursor: pointer; white-space: nowrap; }
+  .btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .btn-ghost { border-color: transparent; background: transparent; color: var(--muted); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover:not(:disabled) { filter: brightness(1.08); color: var(--accent-ink); }
+  .btn-danger { background: var(--bad); border-color: var(--bad); color: var(--surface); }
+  .btn-sm { padding: 3px 9px; font-size: 12px; }
+  .btn-good { color: var(--good); }
+  .btn-bad { color: var(--bad); }
+
+  .input { width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; font-size: 13.5px; color: var(--ink); }
+  textarea.input { min-height: 72px; resize: vertical; }
+  .field { display: grid; gap: 4px; }
+  .field > span { font-size: 12.5px; font-weight: 600; }
+
+  .pill { display: inline-flex; align-items: center; gap: 4px; padding: 1px 9px; border-radius: 99px; font: 500 12px/1.65 var(--font-sans); white-space: nowrap; border: 1px solid transparent; }
+  .pill-amber { background: var(--amber-soft); color: var(--amber); }
+  .pill-good { background: var(--good-soft); color: var(--good); }
+  .pill-accent { background: var(--accent-soft); color: var(--accent); }
+  .pill-bad { background: var(--bad-soft); color: var(--bad); }
+  .pill-inc { background: var(--inc-soft); color: var(--inc); }
+  .pill-ghost { background: transparent !important; border: 1px dashed currentColor; }
+
+  .loc { font: 500 11.5px var(--font-mono); background: var(--accent-soft); color: var(--accent); border-radius: 3px; padding: 1px 6px; text-decoration: none; white-space: nowrap; }
+  a.loc:hover { text-decoration: underline; }
+
+  .msg-error { background: var(--bad-soft); color: var(--bad); padding: 7px 11px; border-radius: 6px; font-size: 13px; }
+  .msg-ok { background: var(--good-soft); color: var(--good); padding: 7px 11px; border-radius: 6px; font-size: 13px; }
+  .msg-info { background: var(--accent-soft); color: var(--ink); padding: 7px 11px; border-radius: 8px; font-size: 13px; }
+  .msg-warn { background: var(--amber-soft); color: var(--amber); padding: 8px 12px; border-radius: 8px; font-size: 13.5px; font-weight: 500; }
+
+  .seg-line:target { background: var(--hl); }
+  .doc { background: var(--sunk); border: 1px solid var(--line); border-radius: 10px; padding: 14px; font: 12.5px/1.6 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; scroll-padding-top: 90px; }

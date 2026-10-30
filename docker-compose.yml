@@ -1,0 +1,26 @@
+# Local production-like stack: Postgres plus the app. `docker compose up --build`, then open http://localhost:3000
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: arroven
+      POSTGRES_PASSWORD: arroven
+      POSTGRES_DB: arroven
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arroven"]
+      interval: 3s
+      retries: 20
+  app:
+    build: .
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      DATABASE_URL: postgres://arroven:arroven@db:5432/arroven
+      APP_URL: http://localhost:3000
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    ports: ["3000:3000"]
+    volumes: [originals:/data/storage]
+volumes:
+  pgdata:
+  originals:
