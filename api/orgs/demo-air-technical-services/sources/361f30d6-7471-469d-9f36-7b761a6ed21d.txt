@@ -1,0 +1,5 @@
+Shop report SR-88120 · PRV P/N 3291-A S/N V1187 · received 20 MAR 2026
+Reason for removal (as received): BLEED 1 FAULT, intermittent.
+Functional test at room temperature: within limits.
+Cold-soak test at -40 C, 2 h: within limits.
+Finding: No fault found. Unit returned to serviceable stock.

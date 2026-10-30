@@ -1,0 +1,2 @@
+Page TLB-4472 · ZZ-DMO · 11 MAR 2026
+Entry 1 (crew): BLEED 1 FAULT recurred, cruise FL360, approx 55 min after TOC. Same as TLB-4471. Bleed 1 lost for remainder of flight.

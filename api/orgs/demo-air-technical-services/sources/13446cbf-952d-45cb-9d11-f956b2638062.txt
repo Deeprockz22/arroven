@@ -1,0 +1,4 @@
+Engineering note EN-0331 · technical services · 31 MAR 2026
+Sister aircraft ZZ-DMP had pylon harness chafe near the PRV connector in 2025 (record not attached).
+Suspect wiring rather than valve, given NFF on V1187 and recurrence with V2240 installed.
+Recommend harness inspection with wiggle test at next A-check. Not yet scheduled.

@@ -1,0 +1,4 @@
+Work order WO-0912 · raised 03 MAR 2026 · ZZ-DMO · ref TLB-4471/3
+Task 1: Replace PRV 1 (P/N 3291-A). Status: PLANNED. Deferred, no serviceable spare at station.
+Task 2: Inspect pylon harness connector at PRV 1 for chafe / moisture. Status: NOT PERFORMED. Insufficient ground time. Carried forward.
+Task 3: PRV 1 operational test. Status: COMPLETED 03 MAR 2026, ambient +16 C, engine 1 at idle. Result: satisfactory.

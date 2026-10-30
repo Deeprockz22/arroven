@@ -1,0 +1,3 @@
+Page TLB-4471 · ZZ-DMO · sector DMA-DMB · 02 MAR 2026
+Entry 2 (crew): BLEED 1 FAULT ECAM in cruise FL370, approx 40 min after top of climb. SAT -56. Bleed 1 lost. Reset per QRH unsuccessful. Continued on bleed 2.
+Entry 3 (MX, 03 MAR 2026): BMC 1 BITE interrogated. Fault message: PRV 1 POSITION DISAGREE. PRV 1 operational test on ground per AMM: satisfactory. NFF. Aircraft released.
